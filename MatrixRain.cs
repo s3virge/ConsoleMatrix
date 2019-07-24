@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleMatrix {
-    class MatrixRain {
+    class MatrixRain : IMatrix {
         static int Counter;
         static Random rand = new Random();
 
@@ -32,8 +32,9 @@ namespace ConsoleMatrix {
                     return (char)(rand.Next(32, 255));
             }
         }
-        public void run() {
+        public void run(string consoleWndTitle) {
 
+            Console.Title = consoleWndTitle;
             Console.ForegroundColor = NormalColor;
             Console.WindowLeft = Console.WindowTop = 0;
             Console.WindowHeight = Console.BufferHeight = Console.LargestWindowHeight;
@@ -46,7 +47,9 @@ namespace ConsoleMatrix {
 
             Initialize(out width, out height, out y);//Setting the Starting Point
 
-            while (true) {
+            int count = 0;
+
+            while (count < 100) {
                 Counter = Counter + 1;
 
                 UpdateAllColumns(width, height, y);
@@ -54,6 +57,7 @@ namespace ConsoleMatrix {
                 if (Counter > (3 * Interval))
                     Counter = 0;
 
+                count++;
             }
         }
         private static void UpdateAllColumns(int width, int height, int[] y) {

@@ -4,9 +4,9 @@
 using System;
 
 namespace ConsoleMatrix {
-    class ConsoleMatrix {
-        public void run() {
-            Console.Title = "Matrix";
+    class ConsoleMatrix : IMatrix {
+        public void run(string title) {
+            Console.Title = title;
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             Console.WindowLeft = Console.WindowTop = 0;
             Console.WindowHeight = Console.BufferHeight = Console.LargestWindowHeight;
@@ -21,8 +21,10 @@ namespace ConsoleMatrix {
             int[] y;
             int[] l;
             Initialize(out width, out height, out y, out l);
+
+            int counter = 0;
             
-            while (true) {
+            while (counter < 100) {
                 DateTime t1 = DateTime.Now;
                 MatrixStep(width, height, y, l);
                 ms = 10 - (int)((TimeSpan)(DateTime.Now - t1)).TotalMilliseconds;
@@ -31,6 +33,8 @@ namespace ConsoleMatrix {
                 if (Console.KeyAvailable)
                     if (Console.ReadKey().Key == ConsoleKey.F5)
                         Initialize(out width, out height, out y, out l);
+
+                counter++;
             }
         }
 
