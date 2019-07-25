@@ -1,22 +1,24 @@
-﻿using System;
+﻿
+//#define TEST
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
-
 namespace ConsoleMatrix {
+
     class App {
         public static void Main() {
             IMatrix matrix = null;
             
             int selectedItem = 0;
+            Console.CursorVisible = false;
 
-
-#if !DEBUG
-           selectedItem = printMenu();
+#if TEST
+            selectedItem = printMenu();
 #else
             selectedItem = 3;
 #endif
@@ -42,19 +44,23 @@ namespace ConsoleMatrix {
 
         private static int printMenu() {
 
+            Console.CursorVisible = true;
+
             int menuItem = 0;
             ConsoleKeyInfo key;
 
             Console.Clear();
             Console.ResetColor();
-            Console.CursorVisible = true;
-
+            
             Console.Write("1 for ConsoleMatrix\n2 for MatrixRain\n3 for CharRain\n Make you choice:  ");
             key = Console.ReadKey();
 
             if (key.Key == ConsoleKey.Enter) {
                 return 0;
             }
+
+            Console.CursorVisible = false;
+            Console.Clear();
 
             return menuItem = Convert.ToInt32(key.KeyChar.ToString());
         }

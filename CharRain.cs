@@ -8,49 +8,82 @@ using System.Threading.Tasks;
 namespace ConsoleMatrix {
     class CharRain : IMatrix {
 
-        private int wndWidth, wndHeight;
-        private int dropLength;
+        private int wndWidth, wndHeight;       
         private int speed;
-
-        public CharRain() : this(50, 25, 7, 200) {
+        
+        public CharRain() : this(100, 25, 20) {
         }
 
-        public CharRain(int wndWidth, int wndHeight, int dropLength, int speed) {
-            this.dropLength = dropLength;
-            this.speed      = speed;
-            setWndSettings(wndWidth, wndHeight); 
+        public CharRain(int wndWidth, int wndHeight, int speed) {
+            this.speed = speed;
+            setWndSettings(wndWidth, wndHeight);
         }
-
+                
         public void run(string wndTitle) {
-            Console.Title = wndTitle;
+            applyWndSettings(wndTitle);
 
-            Console.WindowHeight = wndWidth;
-            Console.WindowHeight = wndHeight;
+            //Thread myThread = new Thread(new ThreadStart(drawsDrops));
+            //myThread.Start(); // запускаем поток        
 
-            drawADrop(0);
-
-            //Console.ReadKey();
+            //todo
+            //create the number of threads equal to the width of the window
+            drawsDrops();
         }
 
+        private void drawsDrops() {
+            
+            Drop drop = new Drop();
+            Random rand = new Random();
 
+            for (int column = 0; column < wndWidth; column++) {
+                drop.StartPosition = rand.Next(wndHeight);
+                drop.Length = rand.Next(wndHeight);
+                //use symbols from unicode table
+                drop.Symbol = (char)rand.Next('!', '~');
+                //drop.Symbol = (char)rand.Next('0', '2');
+                //drop.Symbol = (char)rand.Next(0x021, 0x07e);                
+
+                drawADrop(column, ref drop, ref rand);
+            }
+        }
+
+        private void applyWndSettings(string wndTitle) {
+            Console.Title = wndTitle;
+            Console.WindowWidth = wndWidth;
+            Console.WindowHeight = wndHeight;
+        }
+        
         //set console wnd width and height
         private void setWndSettings(int wndWidth, int wndHeight) {
             this.wndHeight = wndHeight;
             this.wndWidth = wndWidth;
         }
 
-        private void getWndSettings(out int wndWidth, out int wndHeight) {
-            wndWidth = this.wndWidth;
-            wndHeight = this.wndHeight;
-        }
+        //private void getWndSettings(out int wndWidth, out int wndHeight) {
+        //    wndWidth = this.wndWidth;
+        //    wndHeight = this.wndHeight;
+        //}
 
         //draw one drop in selected column
-        private void drawADrop(int column) {
-            for (int c = 0; c < wndHeight ; c++ ) {
-                Console.SetCursorPosition(column, c);
-                Console.Write("@");
+        private void drawADrop(int column, ref Drop drop, ref Random rand) {
+            
+            for (int row = drop.StartPosition; row < wndHeight + drop.Length; row++) {
+                //рисуем начало капли
+                //если голова капли дошла до края окна
+                //то не рисуем её
+                if (row <= wndHeight - 1) {
+                    Console.SetCursorPosition(column, row);
+                    Console.Write((char)rand.Next('!', '~'));
+                }
+
+                //начинаем вытирать хвост капли когда она полностью отобразилась
+                if (row >= drop.Length) {
+                    Console.SetCursorPosition(column, row - drop.Length);
+                    Console.Write(" ");
+                }
+
                 Thread.Sleep(speed);
-            }            
+            }
         }
     }
 }
