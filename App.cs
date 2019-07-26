@@ -23,7 +23,7 @@ namespace ConsoleMatrix {
             selectedItem = 3;
 #endif
 
-            while (true) {
+            //while (true) {
                 switch (selectedItem) {
                     case 1:
                         matrix = new ConsoleMatrix();
@@ -38,8 +38,8 @@ namespace ConsoleMatrix {
 
                 matrix.run(matrix.GetType().Name);
 
-                selectedItem = printMenu();
-            }
+                //selectedItem = printMenu();
+            //}
         }
 
         private static int printMenu() {
