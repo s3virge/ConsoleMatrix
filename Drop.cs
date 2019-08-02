@@ -47,16 +47,14 @@ namespace ConsoleMatrix {
 
             /*рисуем каплю пока хвост не доберётся до низа окна*/
             for (; row < wndHeight + Length; row++) {
-                
+
                 lock (locker) {
                     if (row <= wndHeight - 1) {
-                        drawDrop(ref row);                        
+                        drawDrop(ref row);
                     }
-                    
-                    //начинаем вытирать хвост капли когда она полностью отобразилась
-                    if (row >= Length) {
-                        Console.SetCursorPosition(column, row - Length);
-                        Console.Write(" ");
+
+                    if (row == this.wndHeight) {
+                        drawTail(ref row);
                     }
                     Debug.WriteLine("{0}: column = {1}, row = {2}", Thread.CurrentThread.Name, column, row);
                 }
@@ -66,11 +64,57 @@ namespace ConsoleMatrix {
             drawTheFirstTime = false;
         }
 
-        private void drawDrop(ref int rowNumber) {
-            //нужно перерисовать всю каплю от головы до хвоста. Голова должна быть белой
-            char ch = (char)rand.Next('!', '~');
-            Console.SetCursorPosition(column, rowNumber);
-            Console.Write(ch);
+        private void drawDrop(ref int startRowNumber) {
+
+            ////нужно перерисовать всю каплю от головы до хвоста. Голова должна быть белой
+            //char ch = (char)rand.Next('!', '~');
+            //Console.SetCursorPosition(column, rowNumber);
+            //Console.Write(ch);
+
+            //нужно перерисовать всю каплю от головы до хвоста. 
+            //Голова должна быть белой
+            char ch;
+            int row = startRowNumber;
+
+            //walks on whole length of drop
+            for (int c = 0; c <= this.Length; c++) {
+
+                //если это голова
+                if (c == 0) {
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+
+                //if (c == this.Length) {
+                //    drawTail(ref row);
+                //    break;
+                //}
+
+                ch = (char)rand.Next('!', '~');
+
+                Console.SetCursorPosition(this.column, row);
+                Console.Write(ch);
+                Console.ForegroundColor = ConsoleColor.Green;
+
+                row--;
+                //if drawn the drop to the top of window
+                if (row < 0) {
+                    row = 0;
+                    break;
+                }
+
+                if (row >= this.Length) {
+                    Console.SetCursorPosition(column, row - this.Length);
+                    Console.Write(" ");
+                    //Console.ForegroundColor = ConsoleColor.Green;
+                }
+            }
+        }
+
+        private void drawTail(ref int rowNum) {
+
+            Console.SetCursorPosition(column, rowNum - this.Length);
+            Console.Write(" ");
+            Console.ForegroundColor = ConsoleColor.Green;
         }
     }
 }

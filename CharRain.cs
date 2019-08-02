@@ -27,9 +27,11 @@ namespace ConsoleMatrix {
             int nuberOfThreeds = wndWidth / gap;
             int threadNumber = 0;
 
-            Thread[] threads = new Thread[nuberOfThreeds];
+            //Thread[] threads = new Thread[nuberOfThreeds];
+            Thread[] threads = new Thread[1];
 
-            for (int col = 0; col < wndWidth; col += gap + 1) {
+            //for (int col = 0; col < wndWidth; col += gap + 1) {
+            for (int col = 0; col < 1; col += gap + 1) {
                 Drop drop = new Drop(col, wndHeight, speed);
 
                 //Thread thread = new Thread(new ThreadStart(draw.start));
