@@ -11,49 +11,66 @@ namespace ConsoleMatrix {
         private bool drawTheFirstTime = true;
         public int Length { get; set; }
         public int StartPosition { get; set; }
-        public char Symbol { get; set; }
+        private int drawingSpeed { get; set; }
+        private int wndHeight { get; set; }
 
-        public Drop() : this(7) {
+        private int column;
+
+        static object locker = new object();
+        static Random rand = new Random();
+
+        public Drop(int column, int wndHeight, int drawingSpeed) {
+            this.column = column;
+            this.wndHeight = wndHeight;
+            this.drawingSpeed = drawingSpeed;
+            this.StartPosition = rand.Next(wndHeight);
+            this.Length = rand.Next(wndHeight);
+
+            Console.ForegroundColor = ConsoleColor.Green;
         }
 
-        public Drop(int length) {
-            this.Length = length;
+        public void startDrawing() {
+            for (; ; ) {
+                draw();
+            }
         }
-        public void draw(int column, int wndHeight, int drawSpeed) {
-            //draw one drop in selected column
-            Random rand = new Random();
 
-            /* todo 
-            for the first time the drop must draws at random position
-            and the next time the start position of drop must start from 0
-            */
+        private void draw() {
 
             int row = 0;
 
             if (drawTheFirstTime)
                 row = StartPosition;
 
+            ConsoleColor consoleColor = new ConsoleColor();
+            consoleColor = Console.ForegroundColor;
+
+            /*рисуем каплю пока хвост не доберётся до низа окна*/
             for (; row < wndHeight + Length; row++) {
-                //рисуем начало капли
-                //если голова капли дошла до края окна
-                //то не рисуем её
-                if (row <= wndHeight - 1) {
-                    Console.SetCursorPosition(column, row);
-                    Console.Write((char)rand.Next('!', '~'));
+                
+                lock (locker) {
+                    if (row <= wndHeight - 1) {
+                        drawDrop(ref row);                        
+                    }
+                    
+                    //начинаем вытирать хвост капли когда она полностью отобразилась
+                    if (row >= Length) {
+                        Console.SetCursorPosition(column, row - Length);
+                        Console.Write(" ");
+                    }
+                    Debug.WriteLine("{0}: column = {1}, row = {2}", Thread.CurrentThread.Name, column, row);
                 }
-
-                //начинаем вытирать хвост капли когда она полностью отобразилась
-                if (row >= Length) {
-                    Console.SetCursorPosition(column, row - Length);
-                    Console.Write(" ");
-                }
-
-                Debug.WriteLine("column = {0}, row = {1}", column, row);
-
-                Thread.Sleep(drawSpeed);
+                Thread.Sleep(drawingSpeed);
             }
 
             drawTheFirstTime = false;
+        }
+
+        private void drawDrop(ref int rowNumber) {
+            //нужно перерисовать всю каплю от головы до хвоста. Голова должна быть белой
+            char ch = (char)rand.Next('!', '~');
+            Console.SetCursorPosition(column, rowNumber);
+            Console.Write(ch);
         }
     }
 }

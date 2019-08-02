@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -10,6 +11,7 @@ namespace ConsoleMatrix {
 
         private int wndWidth, wndHeight;
         private int speed;
+        private int gap = 2; //three empty columns, draws drop in the 4 column
 
         public CharRain() : this(100, 25, 80) {
         }
@@ -22,17 +24,22 @@ namespace ConsoleMatrix {
         public void run(string wndTitle) {
             applyWndSettings(wndTitle);
 
-            //todo
-            //create the number of threads equal to the width of the window
-            //and send to each process the number of column in which to draw
-            
-            for (int col = 0; col < 10; col++) {
-                Draw draw = new Draw(col, wndHeight, wndWidth, speed);
-                
-                Thread thread = new Thread(new ThreadStart(draw.start));
-                thread.Name = "-= Thread" + col + " =-";
-                thread.Start(); // запускаем поток 
+            int nuberOfThreeds = wndWidth / gap;
+            int threadNumber = 0;
+
+            Thread[] threads = new Thread[nuberOfThreeds];
+
+            for (int col = 0; col < wndWidth; col += gap + 1) {
+                Drop drop = new Drop(col, wndHeight, speed);
+
+                //Thread thread = new Thread(new ThreadStart(draw.start));
+                //thread.IsBackground = true;
+                //thread.Name = "Thread" + col;
+                //thread.Start(); // запускаем поток 
+
+                (threads[threadNumber++] = new Thread(drop.startDrawing) { IsBackground = true }).Start();
             }
+            Debug.WriteLine("thread length = {0}", threads.Length);            
         }
 
         private void applyWndSettings(string wndTitle) {

@@ -38,6 +38,10 @@ namespace ConsoleMatrix {
 
                 matrix.run(matrix.GetType().Name);
 
+
+            Console.ReadKey();
+
+
                 //selectedItem = printMenu();
             //}
         }

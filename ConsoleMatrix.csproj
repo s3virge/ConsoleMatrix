@@ -45,7 +45,6 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="CharRain.cs" />
-    <Compile Include="Draw.cs" />
     <Compile Include="Drop.cs" />
     <Compile Include="IMatrix.cs" />
     <Compile Include="MatrixRain.cs" />
