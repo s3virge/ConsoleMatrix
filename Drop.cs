@@ -7,12 +7,13 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace ConsoleMatrix {
+
     class Drop {
         private bool drawTheFirstTime = true;
-        public int Length { get; set; }
-        public int StartPosition { get; set; }
+        private int Length { get; set; }
+        private int StartPosition { get; set; }
         private int drawingSpeed { get; set; }
-        private int wndHeight { get; set; }
+        private int numberOfRows { get; set; }
 
         private int column;
 
@@ -21,40 +22,39 @@ namespace ConsoleMatrix {
 
         public Drop(int column, int wndHeight, int drawingSpeed) {
             this.column = column;
-            this.wndHeight = wndHeight;
+            this.numberOfRows = wndHeight - 1;
             this.drawingSpeed = drawingSpeed;
-            this.StartPosition = rand.Next(wndHeight);
-            this.Length = rand.Next(wndHeight);
+            this.StartPosition = rand.Next(numberOfRows);
+            this.Length = genLength();
 
             Console.ForegroundColor = ConsoleColor.Green;
         }
 
-        public void startDrawing() {
-            for (; ; ) {
-                draw();
-            }
+        private int genLength(){
+            return rand.Next(4, this.numberOfRows - 2);
         }
 
-        private void draw() {
+        private char genChar(){
+            return (char)rand.Next('!', '~');
+        }
 
+        public void draw() {
+        for (; ; ) {
             int row = 0;
 
             if (drawTheFirstTime)
                 row = StartPosition;
 
-            ConsoleColor consoleColor = new ConsoleColor();
-            consoleColor = Console.ForegroundColor;
-
-            /*рисуем каплю пока хвост не доберётся до низа окна*/
-            for (; row < wndHeight + Length; row++) {
+            /*рисуем каплю */
+            for (; row <= this.numberOfRows + this.Length; row++) {
 
                 lock (locker) {
-                    if (row <= wndHeight - 1) {
-                        drawDrop(ref row);
+                    if (row <= this.numberOfRows) {
+                        drawWhileFalling(ref row);
                     }
 
-                    if (row == this.wndHeight) {
-                        drawTail(ref row);
+                    if (row > this.numberOfRows) {
+                        drawWhenFell(ref row);
                     }
                     Debug.WriteLine("{0}: column = {1}, row = {2}", Thread.CurrentThread.Name, column, row);
                 }
@@ -62,59 +62,71 @@ namespace ConsoleMatrix {
             }
 
             drawTheFirstTime = false;
+            this.Length = genLength();
+                }
         }
 
-        private void drawDrop(ref int startRowNumber) {
-
-            ////нужно перерисовать всю каплю от головы до хвоста. Голова должна быть белой
-            //char ch = (char)rand.Next('!', '~');
-            //Console.SetCursorPosition(column, rowNumber);
-            //Console.Write(ch);
-
+        private void drawWhileFalling(ref int startRowNumber) {
             //нужно перерисовать всю каплю от головы до хвоста. 
             //Голова должна быть белой
-            char ch;
-            int row = startRowNumber;
 
-            //walks on whole length of drop
-            for (int c = 0; c <= this.Length; c++) {
+            char ch;
+           
+            //walks on whole length of drop from down to top
+            for (int dropElement = 0; dropElement <= this.Length; dropElement++) {
+                 
+                //если нарисовали каплю до верхнего ряда
+                if( startRowNumber - dropElement < 0) {
+                    return;
+                }
 
                 //если это голова
-                if (c == 0) {
+                if (dropElement == 0) {
                     Console.ForegroundColor = ConsoleColor.White;
                 }
 
-                //if (c == this.Length) {
-                //    drawTail(ref row);
-                //    break;
-                //}
+                ch = genChar();
+                
+                if (dropElement == this.Length){
+                    ch = ' ';
+                }
 
-                ch = (char)rand.Next('!', '~');
-
-                Console.SetCursorPosition(this.column, row);
+                Console.SetCursorPosition(this.column, startRowNumber - dropElement);
                 Console.Write(ch);
-                Console.ForegroundColor = ConsoleColor.Green;
-
-                row--;
-                //if drawn the drop to the top of window
-                if (row < 0) {
-                    row = 0;
-                    break;
-                }
-
-                if (row >= this.Length) {
-                    Console.SetCursorPosition(column, row - this.Length);
-                    Console.Write(" ");
-                    //Console.ForegroundColor = ConsoleColor.Green;
-                }
+                Console.ForegroundColor = ConsoleColor.Green;                               
             }
         }
 
-        private void drawTail(ref int rowNum) {
+        private void drawWhenFell(ref int rowOfTheHead) {
+            //number of repeats
+            Debug.WriteLine("row number = {0}", rowOfTheHead);
 
-            Console.SetCursorPosition(column, rowNum - this.Length);
-            Console.Write(" ");
-            Console.ForegroundColor = ConsoleColor.Green;
+            //перерисовать всю строкуchar ch;
+           
+            //перемещаемся по капле снизу в верх
+            //вычислить число видимых элементов
+            int numbeOfRepeats = rowOfTheHead - this.numberOfRows - this.Length;
+            Debug.WriteLine("numbe Of Repeats = {0}", numbeOfRepeats);
+
+            if (numbeOfRepeats < 0){
+                numbeOfRepeats = -(numbeOfRepeats); //make positive
+            }
+
+            char ch;
+
+            for (int element = 0; element <= numbeOfRepeats; element++) {
+                Debug.WriteLine("element = {0}", element);
+
+                ch = genChar();
+                
+                if (element == numbeOfRepeats){
+                    ch = ' ';
+                }
+
+                Console.SetCursorPosition(this.column, this.numberOfRows - element);
+                Console.Write(ch);
+                Console.ForegroundColor = ConsoleColor.Green;    
+            }
         }
     }
 }

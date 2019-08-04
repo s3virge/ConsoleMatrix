@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define TEST
+
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -9,16 +11,17 @@ using System.Threading.Tasks;
 namespace ConsoleMatrix {
     class CharRain : IMatrix {
 
-        private int wndWidth, wndHeight;
+        private int wndWidth, wndHeight;  //numbe of rows and number of columns
         private int speed;
-        private int gap = 2; //three empty columns, draws drop in the 4 column
+        private int gap = 1; //three empty columns, draws drop in the 4 column
 
-        public CharRain() : this(100, 25, 80) {
+        public CharRain() : this(100, 30, 100) {
         }
 
         public CharRain(int wndWidth, int wndHeight, int speed) {
             this.speed = speed;
-            setWndSettings(wndWidth, wndHeight);
+             
+            setWndSettings(wndWidth, wndHeight); //reduce by 1 for do not out of range
         }
 
         public void run(string wndTitle) {
@@ -27,21 +30,24 @@ namespace ConsoleMatrix {
             int nuberOfThreeds = wndWidth / gap;
             int threadNumber = 0;
 
-            //Thread[] threads = new Thread[nuberOfThreeds];
-            Thread[] threads = new Thread[1];
-
-            //for (int col = 0; col < wndWidth; col += gap + 1) {
-            for (int col = 0; col < 1; col += gap + 1) {
-                Drop drop = new Drop(col, wndHeight, speed);
+            
+#if !TEST
+            Thread[] threads = new Thread[nuberOfThreeds];
+#else
+            Thread[] threads = new Thread[2];
+            wndWidth = 2;
+#endif           
+            for (int col = 0; col < wndWidth; col += gap + 1) {
+            
+            Drop drop = new Drop(col, wndHeight, speed);
 
                 //Thread thread = new Thread(new ThreadStart(draw.start));
                 //thread.IsBackground = true;
                 //thread.Name = "Thread" + col;
                 //thread.Start(); // запускаем поток 
 
-                (threads[threadNumber++] = new Thread(drop.startDrawing) { IsBackground = true }).Start();
-            }
-            Debug.WriteLine("thread length = {0}", threads.Length);            
+                (threads[threadNumber++] = new Thread(drop.draw) { IsBackground = true }).Start();
+            }    
         }
 
         private void applyWndSettings(string wndTitle) {
