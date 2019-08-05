@@ -27,7 +27,7 @@ namespace ConsoleMatrix {
             this.StartPosition = rand.Next(numberOfRows);
             this.Length = genLength();
 
-            Console.ForegroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
         }
 
         private int genLength() {
@@ -85,6 +85,10 @@ namespace ConsoleMatrix {
                     Console.ForegroundColor = ConsoleColor.White;
                 }
 
+                if (dropElement == 1) {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                }
+
                 ch = genChar();
 
                 if (dropElement == this.Length) {
@@ -93,7 +97,7 @@ namespace ConsoleMatrix {
 
                 Console.SetCursorPosition(this.column, startRowNumber - dropElement);
                 Console.Write(ch);
-                Console.ForegroundColor = ConsoleColor.Green;
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
             }
         }
 
@@ -101,7 +105,6 @@ namespace ConsoleMatrix {
             
             Debug.WriteLine("row number = {0}", rowOfTheHead);
 
-            char ch;
             //redraw the drop from bottom to top
             //calculate the number of visible elements
             //number of repeats
@@ -125,7 +128,7 @@ namespace ConsoleMatrix {
 
                 Console.SetCursorPosition(this.column, this.numberOfRows - element);
                 Console.Write(ch);
-                Console.ForegroundColor = ConsoleColor.Green;
+                Console.ForegroundColor = ConsoleColor.DarkGreen;
             }
         }
     }
