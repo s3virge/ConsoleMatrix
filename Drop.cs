@@ -30,85 +30,85 @@ namespace ConsoleMatrix {
             Console.ForegroundColor = ConsoleColor.Green;
         }
 
-        private int genLength(){
+        private int genLength() {
             return rand.Next(4, this.numberOfRows - 2);
         }
 
-        private char genChar(){
+        private char genChar() {
             return (char)rand.Next('!', '~');
         }
 
         public void draw() {
-        for (; ; ) {
-            int row = 0;
+            for (; ; ) {
+                int row = 0;
 
-            if (drawTheFirstTime)
-                row = StartPosition;
+                if (drawTheFirstTime)
+                    row = StartPosition;
 
-            /*рисуем каплю */
-            for (; row <= this.numberOfRows + this.Length; row++) {
+                /*drow the drop */
+                for (; row <= this.numberOfRows + this.Length; row++) {
 
-                lock (locker) {
-                    if (row <= this.numberOfRows) {
-                        drawWhileFalling(ref row);
+                    lock (locker) {
+                        if (row <= this.numberOfRows) {
+                            drawWhileFalling(ref row);
+                        }
+
+                        if (row > this.numberOfRows) {
+                            drawWhenFell(ref row);
+                        }
+                        Debug.WriteLine("{0}: column = {1}, row = {2}", Thread.CurrentThread.Name, column, row);
                     }
-
-                    if (row > this.numberOfRows) {
-                        drawWhenFell(ref row);
-                    }
-                    Debug.WriteLine("{0}: column = {1}, row = {2}", Thread.CurrentThread.Name, column, row);
+                    Thread.Sleep(drawingSpeed);
                 }
-                Thread.Sleep(drawingSpeed);
+
+                drawTheFirstTime = false;
+                this.Length = genLength();
             }
-
-            drawTheFirstTime = false;
-            this.Length = genLength();
-                }
         }
 
         private void drawWhileFalling(ref int startRowNumber) {
-            //нужно перерисовать всю каплю от головы до хвоста. 
-            //Голова должна быть белой
+            
+            //the head of drop must be white
 
             char ch;
-           
+
             //walks on whole length of drop from down to top
             for (int dropElement = 0; dropElement <= this.Length; dropElement++) {
-                 
-                //если нарисовали каплю до верхнего ряда
-                if( startRowNumber - dropElement < 0) {
+
+                //if redraw the drop to the top of the window
+                if (startRowNumber - dropElement < 0) {
                     return;
                 }
 
-                //если это голова
+                //if it is a head
                 if (dropElement == 0) {
                     Console.ForegroundColor = ConsoleColor.White;
                 }
 
                 ch = genChar();
-                
-                if (dropElement == this.Length){
+
+                if (dropElement == this.Length) {
                     ch = ' ';
                 }
 
                 Console.SetCursorPosition(this.column, startRowNumber - dropElement);
                 Console.Write(ch);
-                Console.ForegroundColor = ConsoleColor.Green;                               
+                Console.ForegroundColor = ConsoleColor.Green;
             }
         }
 
         private void drawWhenFell(ref int rowOfTheHead) {
-            //number of repeats
+            
             Debug.WriteLine("row number = {0}", rowOfTheHead);
 
-            //перерисовать всю строкуchar ch;
-           
-            //перемещаемся по капле снизу в верх
-            //вычислить число видимых элементов
+            char ch;
+            //redraw the drop from bottom to top
+            //calculate the number of visible elements
+            //number of repeats
             int numbeOfRepeats = rowOfTheHead - this.numberOfRows - this.Length;
             Debug.WriteLine("numbe Of Repeats = {0}", numbeOfRepeats);
 
-            if (numbeOfRepeats < 0){
+            if (numbeOfRepeats < 0) {
                 numbeOfRepeats = -(numbeOfRepeats); //make positive
             }
 
@@ -118,14 +118,14 @@ namespace ConsoleMatrix {
                 Debug.WriteLine("element = {0}", element);
 
                 ch = genChar();
-                
-                if (element == numbeOfRepeats){
+
+                if (element == numbeOfRepeats) {
                     ch = ' ';
                 }
 
                 Console.SetCursorPosition(this.column, this.numberOfRows - element);
                 Console.Write(ch);
-                Console.ForegroundColor = ConsoleColor.Green;    
+                Console.ForegroundColor = ConsoleColor.Green;
             }
         }
     }
