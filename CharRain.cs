@@ -15,7 +15,7 @@ namespace ConsoleMatrix {
         private int speed;
         private int gap = 2; //three empty columns, draws drop in the 4 column
 
-        public CharRain() : this(100, 30, 80) {
+        public CharRain() : this(120, 30, 80) {
         }
 
         public CharRain(int wndWidth, int wndHeight, int speed) {
